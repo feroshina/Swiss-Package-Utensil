@@ -4,7 +4,7 @@
 #include <array>
 #include <cstdio>
 // ===== EXEC =====
-#define VERSION 1.1
+#define VERSION 0.1.1
 std::string exec(const std::string& cmd)
 {
     std::array<char, 256> buffer;
@@ -36,13 +36,13 @@ bool has(const std::string& cmd)
 std::string resolveCommand(const std::string& cmd)
 {
     // INSTALL
-    if (cmd == "install" || cmd == "i" || cmd == "add" || cmd == "-S")
+    if (cmd == "install" || cmd == "i" || cmd == "add" || cmd == "-S" || cmd == "get")
     {
         return "install";
     }
 
     // REMOVE
-    if (cmd == "remove" || cmd == "rm" || cmd == "uninstall" || cmd == "-R")
+    if (cmd == "remove" || cmd == "rm" || cmd == "uninstall" || cmd == "-R" || cmd == "delete")
     {
         return "remove";
     }
@@ -93,6 +93,10 @@ bool search(const std::string& manager, const std::string& pkg)
     {
         result = exec("snap find " + pkg);
     }
+    else if (manager == "yay")
+    {
+        result = exec("yay -Ss " + pkg);
+    }
 
     return !result.empty();
 }
@@ -122,6 +126,10 @@ bool installPkg(const std::string& manager, const std::string& pkgList)
     {
         result = system(("sudo snap install " + pkgList).c_str());
     }
+    else if (manager == "yay")
+    {
+        result = system(("yay -S " + pkgList).c_str());
+    }
 
     return result == 0;
 }
@@ -149,6 +157,10 @@ void removePkg(const std::string& manager, const std::string& pkgList)
     {
         system(("sudo snap remove " + pkgList).c_str());
     }
+    else if (manager == "yay")
+    {
+        system(("yay -R " + pkgList).c_str());
+    }
 }
 
 // ===== HELP =====
@@ -161,17 +173,18 @@ void showHelp()
     std::cout << "  swiss install <pacote>\n";
     std::cout << "  swiss add <pacote>\n";
     std::cout << "  swiss i <pacote>\n";
+    std::cout << "  swiss get <pacote>\n";
     std::cout << "  swiss -S <pacote>\n\n";
 
     std::cout << "  swiss search <pacote>\n";
     std::cout << "  swiss s <pacote>\n\n";
 
+    std::cout << "  swiss delete <manager> <pacote>\n";
     std::cout << "  swiss remove <manager> <pacote>\n";
     std::cout << "  swiss rm <manager> <pacote>\n\n";
 
     std::cout << "  swiss update\n\n";
 
-    std::cout << "Opções:\n";
     std::cout << "  -h, --help, help, h\n";
     std::cout << "  --version\n";
 }
@@ -240,7 +253,7 @@ int main(int argc, char* argv[])
 
         std::vector<std::string> priority =
         {
-            "apt", "pacman", "dnf", "flatpak", "snap"
+            "apt", "pacman", "dnf", "yay", "flatpak", "snap"
         };
 
         std::vector<std::string> available;
@@ -307,6 +320,7 @@ int main(int argc, char* argv[])
         if (has("dnf")) std::cout << exec("dnf search " + pkg);
         if (has("flatpak")) std::cout << exec("flatpak search " + pkg);
         if (has("snap")) std::cout << exec("snap find " + pkg);
+        if (has("yay")) std::cout << exec("yay -Ss " + pkg;
     }
 
     // ===== REMOVE =====
