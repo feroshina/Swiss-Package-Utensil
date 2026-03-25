@@ -5,7 +5,7 @@ set -e
 # ===== CONFIG =====
 NAME="swiss"
 SRC="swiss.cpp"
-REPO="https://github.com/feroshina/Swiss-Package-Utensil/releases"
+REPO="https://raw.githubusercontent.com/feroshina/Swiss-Package-Utensil/refs/heads/main/swiss.cpp"
 DEST="/usr/local/bin/$NAME"
 
 echo "== Swiss Installer =="
