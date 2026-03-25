@@ -320,7 +320,7 @@ int main(int argc, char* argv[])
         if (has("dnf")) std::cout << exec("dnf search " + pkg);
         if (has("flatpak")) std::cout << exec("flatpak search " + pkg);
         if (has("snap")) std::cout << exec("snap find " + pkg);
-        if (has("yay")) std::cout << exec("yay -Ss " + pkg;
+        if (has("yay")) std::cout << exec("yay -Ss " + pkg);
     }
 
     // ===== REMOVE =====
