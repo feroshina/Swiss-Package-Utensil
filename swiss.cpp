@@ -283,7 +283,7 @@ int main(int argc, char* argv[])
         char choice;
         std::cin >> choice;
 
-        if (choice == 'y' || choice == 'Y')
+        if (choice == 'y' || choice == 'Y' || choice == 's' || choice == 'S')
         {
             std::cout << "Usando: " << available[0] << "\n";
             installPkg(available[0], pkgList);
