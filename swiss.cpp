@@ -3,10 +3,6 @@
 #include <string>
 #include <array>
 #include <cstdio>
-
-// ===== CONFIG =====
-#define VERSION "1.1.0"
-
 // ===== EXEC =====
 std::string exec(const std::string& cmd)
 {
