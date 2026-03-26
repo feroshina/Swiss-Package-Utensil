@@ -4,7 +4,7 @@
 #include <array>
 #include <cstdio>
 // ===== EXEC =====
-#define VERSION "0.1.2"
+#define VERSION "0.1.3"
 std::string exec(const std::string& cmd)
 {
     std::array<char, 256> buffer;
