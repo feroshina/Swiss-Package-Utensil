@@ -228,6 +228,7 @@ void showHelp()
     std::cout << "  swiss remove <manager> <pacote>\n";
     std::cout << "  swiss rm <manager> <pacote>\n\n";
 
+    std::cout << "Atualização 🔄 \n\n";
     std::cout << "  swiss up <pacote>\n";
     std::cout << "  swiss -Syu <pacote>\n";
     std::cout << "  swiss upgrade <pacote>\n";
