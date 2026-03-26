@@ -81,7 +81,7 @@ bool search(const std::string& manager, const std::string& pkg)
     {
         result = exec("pacman -Ss " + pkg);
     }
-    else if (manager == "dnf")
+    else if (manager == "dnf" || "dnf5")
     {
         result = exec("dnf search " + pkg);
     }
@@ -120,15 +120,15 @@ bool installPkg(const std::string& manager, const std::string& pkgList)
     std::cout << "  📦  Instalando pacote(s)..." <<std::endl;
     if (manager == "apt")
     {
-        result = system(("sudo apt install -y " + pkgList).c_str());
+        result = system(("apt install -y " + pkgList).c_str());
     }
     else if (manager == "pacman")
     {
-        result = system(("sudo pacman -S " + pkgList).c_str());
+        result = system(("pacman -S " + pkgList).c_str());
     }
-    else if (manager == "dnf")
+    else if (manager == "dnf" || "dnf5")
     {
-        result = system(("sudo dnf install -y " + pkgList).c_str());
+        result = system(("dnf install -y " + pkgList).c_str());
     }
     else if (manager == "flatpak")
     {
@@ -136,7 +136,7 @@ bool installPkg(const std::string& manager, const std::string& pkgList)
     }
     else if (manager == "snap")
     {
-        result = system(("sudo snap install " + pkgList).c_str());
+        result = system(("snap install " + pkgList).c_str());
     }
     else if (manager == "yay")
     {
@@ -164,15 +164,15 @@ void removePkg(const std::string& manager, const std::string& pkgList)
     std::cout << "  🗑️  Removendo pacote(s)..." << std::endl;
     if (manager == "apt")
     {
-        system(("sudo apt remove -y " + pkgList).c_str());
+        system(("apt remove -y " + pkgList).c_str());
     }
     else if (manager == "pacman")
     {
-        system(("sudo pacman -R " + pkgList).c_str());
+        system(("pacman -R " + pkgList).c_str());
     }
-    else if (manager == "dnf")
+    else if (manager == "dnf" || "dnf5")
     {
-        system(("sudo dnf remove -y " + pkgList).c_str());
+        system(("dnf remove -y " + pkgList).c_str());
     }
     else if (manager == "flatpak")
     {
@@ -180,7 +180,7 @@ void removePkg(const std::string& manager, const std::string& pkgList)
     }
     else if (manager == "snap")
     {
-        system(("sudo snap remove " + pkgList).c_str());
+        system(("snap remove " + pkgList).c_str());
     }
     else if (manager == "yay")
     {
@@ -298,7 +298,7 @@ int main(int argc, char* argv[])
 
         std::vector<std::string> priority =
         {
-            "xbps", "pkg","apt", "pacman", "dnf", "paru", "yay", "flatpak", "snap"
+            "xbps", "pkg", "apt", "pacman", "dnf", "paru", "yay", "flatpak", "snap"
         };
 
         std::vector<std::string> available;
@@ -360,13 +360,13 @@ int main(int argc, char* argv[])
 
         std::string pkg = argv[2];
 
-        if (has("apt")) std::cout << exec("apt search " + pkg);
-        if (has("pacman")) std::cout << exec("pacman -Ss " + pkg);
-        if (has("dnf")) std::cout << exec("dnf search " + pkg);
+        if (has("apt")) std::cout << exec("sudo apt search " + pkg);
+        if (has("pacman")) std::cout << exec("sudo pacman -Ss " + pkg);
+        if (has("dnf" || "dnf5")) std::cout << exec("sudo dnf search " + pkg);
         if (has("flatpak")) std::cout << exec("flatpak search " + pkg);
-        if (has("snap")) std::cout << exec("snap find " + pkg);
+        if (has("snap")) std::cout << exec("sudo snap find " + pkg);
         if (has("yay")) std::cout << exec("yay -Ss " + pkg);
-        if (has("xbps")) std::cout << exec("xbps-query " + pkg);
+        if (has("xbps")) std::cout << exec("sudo xbps-query " + pkg);
         if (has("paru")) std::cout << exec("paru -Ss " + pkg);
         if (has("pkg")) std::cout << exec("pkg search " + pkg);
     }
