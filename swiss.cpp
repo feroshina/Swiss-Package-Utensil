@@ -362,7 +362,7 @@ int main(int argc, char* argv[])
 
         if (has("apt")) std::cout << exec("sudo apt search " + pkg);
         if (has("pacman")) std::cout << exec("sudo pacman -Ss " + pkg);
-        if (has("dnf" || "dnf5")) std::cout << exec("sudo dnf search " + pkg);
+        if (has("dnf" or "dnf5")) std::cout << exec("sudo dnf search " + pkg);
         if (has("flatpak")) std::cout << exec("flatpak search " + pkg);
         if (has("snap")) std::cout << exec("sudo snap find " + pkg);
         if (has("yay")) std::cout << exec("yay -Ss " + pkg);
