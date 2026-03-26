@@ -36,7 +36,7 @@ bool has(const std::string& cmd)
 std::string resolveCommand(const std::string& cmd)
 {
     // INSTALL
-    if (cmd == "install" || cmd == "i" || cmd == "add" || cmd == "-S" || cmd == "get")
+    if (cmd == "install" || cmd == "i" || cmd == "add" || cmd == "-S" || cmd == "get" || cmd == "in")
     {
         return "install";
     }
@@ -97,6 +97,10 @@ bool search(const std::string& manager, const std::string& pkg)
     {
         result = exec("yay -Ss " + pkg);
     }
+    else if (manager == "xbps")
+    {
+        result = exec("xbps-query " + pkg);
+    }
 
     return !result.empty();
 }
@@ -130,6 +134,10 @@ bool installPkg(const std::string& manager, const std::string& pkgList)
     {
         result = system(("yay -S " + pkgList).c_str());
     }
+    else if (manager == "xbps")
+    {
+        result = system(("xbps-install -S " + pkgList).c_str());
+    }
 
     return result == 0;
 }
@@ -161,6 +169,11 @@ void removePkg(const std::string& manager, const std::string& pkgList)
     {
         system(("yay -R " + pkgList).c_str());
     }
+    else if (manager == "xbps")
+    {
+        system(("xbps-remove " + pkgList).c_str());
+    }
+        
 }
 
 // ===== HELP =====
@@ -173,6 +186,7 @@ void showHelp()
     std::cout << "  swiss install <pacote>\n";
     std::cout << "  swiss add <pacote>\n";
     std::cout << "  swiss i <pacote>\n";
+    std::cout << "  swiss in <pacote>\n";
     std::cout << "  swiss get <pacote>\n";
     std::cout << "  swiss -S <pacote>\n\n";
 
@@ -253,7 +267,7 @@ int main(int argc, char* argv[])
 
         std::vector<std::string> priority =
         {
-            "apt", "pacman", "dnf", "yay", "flatpak", "snap"
+            "xbps", "apt", "pacman", "dnf", "yay", "flatpak", "snap"
         };
 
         std::vector<std::string> available;
@@ -279,7 +293,7 @@ int main(int argc, char* argv[])
             std::cout << i + 1 << ") " << available[i] << "\n";
         }
 
-        std::cout << "\nInstalar automaticamente? (y/n): ";
+        std::cout << "\nInstalar automaticamente? (s, y/n): ";
         char choice;
         std::cin >> choice;
 
@@ -321,8 +335,8 @@ int main(int argc, char* argv[])
         if (has("flatpak")) std::cout << exec("flatpak search " + pkg);
         if (has("snap")) std::cout << exec("snap find " + pkg);
         if (has("yay")) std::cout << exec("yay -Ss " + pkg);
+        if (has("xbps")) std::cout << exec("xbps-query " + pkg);
     }
-
     // ===== REMOVE =====
     else if (command == "remove")
     {
