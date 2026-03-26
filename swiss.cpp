@@ -105,6 +105,10 @@ bool search(const std::string& manager, const std::string& pkg)
     {
         result = exec("paru -Ss " + pkg);
     }
+    else if (manager == "pkg")
+    {
+        result = exec("pkg search " pkg);
+    }
 
     return !result.empty();
 }
@@ -146,6 +150,10 @@ bool installPkg(const std::string& manager, const std::string& pkgList)
     {
         result = system(("paru -S " pkgList).c_str());
     }
+    else if (manager == "pkg")
+    {
+        result = system(("pkg install " pkgList).c_str());
+    }
 
     return result == 0;
 }
@@ -184,7 +192,11 @@ void removePkg(const std::string& manager, const std::string& pkgList)
     }
     else if (manager == "paru")
     {
-        system(("paru -R " +pkgList.c_str());
+        system(("paru -R " +pkgList).c_str());
+    }
+    else if (manager == "pkg")
+    {
+        system(("pkg uninstall " +pkgList).c_str());
     }
         
 }
@@ -286,7 +298,7 @@ int main(int argc, char* argv[])
 
         std::vector<std::string> priority =
         {
-            "xbps", "apt", "pacman", "dnf", "paru", "yay", "flatpak", "snap"
+            "xbps", "apt","pkg", "pacman", "dnf", "paru", "yay", "flatpak", "snap"
         };
 
         std::vector<std::string> available;
@@ -356,6 +368,7 @@ int main(int argc, char* argv[])
         if (has("yay")) std::cout << exec("yay -Ss " + pkg);
         if (has("xbps")) std::cout << exec("xbps-query " + pkg);
         if (has("paru")) std::cout << exec("paru -Ss " + pkg);
+        if (has("pkg")) std::cout << exec("pkg search " + pkg);
     }
     // ===== REMOVE =====
     else if (command == "remove")
