@@ -54,7 +54,7 @@ std::string resolveCommand(const std::string& cmd)
     }
 
     // UPDATE
-    if (cmd == "update" || cmd == "upgrade" || cmd == "up")
+    if (cmd == "update" || cmd == "upgrade" || cmd == "up" || cmd == "-Syu")
     {
         return "update";
     }
@@ -228,12 +228,109 @@ void showHelp()
     std::cout << "  swiss remove <manager> <pacote>\n";
     std::cout << "  swiss rm <manager> <pacote>\n\n";
 
-    std::cout << "  swiss update\n\n";
+    std::cout << "  swiss up <pacote>\n";
+    std::cout << "  swiss -Syu <pacote>\n";
+    std::cout << "  swiss upgrade <pacote>\n";
+    std::cout << "  swiss update <pacote>\n\n";
 
     std::cout << "  -h, --help, help, h\n";
     std::cout << "  --version\n";
 }
+// ===== UPDATE PACKAGE =====
+void updatePkg(const std::string& manager, const std::string& pkg)
+{
+    std::cout << "  🔄  Atualizando pacote...\n";
 
+    if (manager == "apt")
+    {
+        system(("apt install --only-upgrade -y " + pkg).c_str());
+    }
+    else if (manager == "pacman")
+    {
+        system(("pacman -S " + pkg).c_str());
+    }
+    else if (manager == "dnf" || manager == "dnf5")
+    {
+        system(("dnf upgrade -y " + pkg).c_str());
+    }
+    else if (manager == "flatpak")
+    {
+        system(("flatpak update -y " + pkg).c_str());
+    }
+    else if (manager == "snap")
+    {
+        system(("snap refresh " + pkg).c_str());
+    }
+    else if (manager == "yay")
+    {
+        system(("yay -S " + pkg).c_str());
+    }
+    else if (manager == "paru")
+    {
+        system(("paru -S " + pkg).c_str());
+    }
+    else if (manager == "xbps")
+    {
+        system(("xbps-install -Su " + pkg).c_str());
+    }
+    else if (manager == "pkg")
+    {
+        system(("pkg upgrade " + pkg).c_str());
+    }
+}
+// ===== UPDATE ALL (1 MANAGER) =====
+void updateAll(const std::string& manager)
+{
+    std::cout << "  🔄  Atualizando via " << manager << "...\n";
+
+    if (manager == "apt")
+    {
+        system("apt update && apt upgrade -y");
+    }
+    else if (manager == "pacman")
+    {
+        system("pacman -Syu");
+    }
+    else if (manager == "dnf" || manager == "dnf5")
+    {
+        system("dnf upgrade -y");
+    }
+    else if (manager == "flatpak")
+    {
+        system("flatpak update -y");
+    }
+    else if (manager == "snap")
+    {
+        system("snap refresh");
+    }
+    else if (manager == "yay")
+    {
+        system("yay -Syu");
+    }
+    else if (manager == "paru")
+    {
+        system("paru -Syu");
+    }
+    else if (manager == "xbps")
+    {
+        system("xbps-install -Su");
+    }
+    else if (manager == "pkg")
+    {
+        system("pkg upgrade -y");
+    }
+}
+// ===== UPDATE SYSTEM =====
+void updateSystem(const std::vector<std::string>& managers)
+{
+    for (auto& m : managers)
+    {
+        if (has(m))
+        {
+            updateAll(m);
+        }
+    }
+}
 // ===== MAIN =====
 int main(int argc, char* argv[])
 {
@@ -265,13 +362,51 @@ int main(int argc, char* argv[])
         command = "install";
     }
 
-    // ===== UPDATE =====
-    if (command == "update")
+// ===== UPDATE =====
+if (command == "update")
+{
+    std::vector<std::string> managers =
     {
-        system("curl -sL https://raw.githubusercontent.com/feroshina/swiss/main/install.sh | bash");
+        "xbps", "pkg", "apt", "pacman", "dnf", "dnf5", "paru", "yay", "flatpak", "snap"
+    };
+
+    // swiss update → tudo
+    if (argc == 2)
+    {
+        updateSystem(managers);
         return 0;
     }
 
+    std::string target = argv[2];
+
+    // swiss update apt
+    if (has(target))
+    {
+        updateAll(target);
+        return 0;
+    }
+
+    // swiss update apt firefox
+    if (argc >= 4)
+    {
+        std::string manager = argv[2];
+        std::string pkg = argv[3];
+
+        updatePkg(manager, pkg);
+        return 0;
+    }
+
+    // swiss update firefox (auto)
+    for (auto& m : managers)
+    {
+        if (has(m))
+        {
+            updatePkg(m, target);
+        }
+    }
+
+    return 0;
+}
     // ===== INSTALL =====
     if (command == "install")
     {
