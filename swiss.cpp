@@ -28,7 +28,7 @@ std::string exec(const std::string& cmd)
 // ===== SYSTEM CHECK =====
 bool has(const std::string& cmd)
 {
-    std::string check = "which " + cmd + " > /dev/null 2>&1";
+    std::string check = "command -v " + cmd + " > /dev/null 2>&1";
     return system(check.c_str()) == 0;
 }
 
