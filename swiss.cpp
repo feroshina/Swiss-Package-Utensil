@@ -4,7 +4,7 @@
 #include <array>
 #include <cstdio>
 // ===== EXEC =====
-#define VERSION "0.1.3"
+#define VERSION "0.1.4"
 std::string exec(const std::string& cmd)
 {
     std::array<char, 256> buffer;
@@ -298,7 +298,7 @@ int main(int argc, char* argv[])
 
         std::vector<std::string> priority =
         {
-            "xbps", "pkg", "apt", "pacman", "dnf", "paru", "yay", "flatpak", "snap"
+            "xbps", "pkg", "apt", "pacman", "dnf", "dnf5", "paru", "yay", "flatpak", "snap"
         };
 
         std::vector<std::string> available;
@@ -360,13 +360,14 @@ int main(int argc, char* argv[])
 
         std::string pkg = argv[2];
 
-        if (has("apt")) std::cout << exec("sudo apt search " + pkg);
+        if (has("apt")) std::cout << exec("apt search " + pkg);
         if (has("pacman")) std::cout << exec("sudo pacman -Ss " + pkg);
-        if (has("dnf" or "dnf5")) std::cout << exec("sudo dnf search " + pkg);
+        if (has("dnf5")) std::cout << exec("dnf search " + pkg);
+        if (has("dnf")) std::cout << exec("dnf search " + pkg);
         if (has("flatpak")) std::cout << exec("flatpak search " + pkg);
-        if (has("snap")) std::cout << exec("sudo snap find " + pkg);
+        if (has("snap")) std::cout << exec("snap find " + pkg);
         if (has("yay")) std::cout << exec("yay -Ss " + pkg);
-        if (has("xbps")) std::cout << exec("sudo xbps-query " + pkg);
+        if (has("xbps")) std::cout << exec("xbps-query " + pkg);
         if (has("paru")) std::cout << exec("paru -Ss " + pkg);
         if (has("pkg")) std::cout << exec("pkg search " + pkg);
     }
