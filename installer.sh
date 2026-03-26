@@ -22,19 +22,58 @@ else
     exit 1
 fi
 
-# ===== VERIFICAR COMPILADOR =====
-if ! command -v g++ &> /dev/null
+# ===== DETECTAR COMPILADOR =====
+if command -v clang++ &> /dev/null
 then
-    echo "Erro: g++ não encontrado"
+    COMPILER="clang++"
+elif command -v g++ &> /dev/null
+then
+    COMPILER="g++"
+else
+    echo "Erro: nenhum compilador encontrado (clang++ ou g++)"
     echo "Instale com:"
-    echo "  Ubuntu/Debian: sudo apt install g++"
-    echo "  Arch: sudo pacman -S gcc"
-    echo "  Fedora: sudo dnf install gcc-c++"
+    echo "  Ubuntu/Debian: sudo apt install clang ou g++"
+    echo "  Arch: sudo pacman -S clang ou gcc"
+    echo "  Fedora: sudo dnf install clang ou gcc-c++"
     exit 1
 fi
 
+echo "Usando compilador: $COMPILER"
+
 # ===== BAIXAR CÓDIGO =====
 echo "Baixando código..."
+$DOWNLOAD "$REPO/$SRC" > "$SRC"
+
+# ===== VERIFICAR HTML =====
+if grep -q "<html" "$SRC"
+then
+    echo "Erro: arquivo inválido (HTML detectado)"
+    exit 1
+fi
+
+# ===== COMPILAR =====
+echo "Compilando..."
+$COMPILER -O2 -std=c++17 "$SRC" -o "$NAME"
+
+# ===== PERMISSÃO =====
+chmod +x "$NAME"
+
+# ===== INSTALAR =====
+echo "Instalando em $DEST..."
+sudo mv "$NAME" "$DEST"
+
+# ===== LIMPEZA =====
+rm -f "$SRC"
+
+# ===== VERIFICAÇÃO =====
+if command -v swiss &> /dev/null
+then
+    echo ""
+    echo "✔ Swiss instalado com sucesso!"
+    echo "Use: swiss --help"
+else
+    echo "Erro na instalação."
+fiecho "Baixando código..."
 $DOWNLOAD "$REPO/$SRC" > "$SRC"
 
 # ===== VERIFICAR SE NÃO É HTML =====
