@@ -107,7 +107,7 @@ bool search(const std::string& manager, const std::string& pkg)
     }
     else if (manager == "pkg")
     {
-        result = exec("pkg search " pkg);
+        result = exec("pkg search " + pkg);
     }
 
     return !result.empty();
@@ -148,11 +148,11 @@ bool installPkg(const std::string& manager, const std::string& pkgList)
     }
     else if (manager == "paru")
     {
-        result = system(("paru -S " pkgList).c_str());
+        result = system(("paru -S " + pkgList).c_str());
     }
     else if (manager == "pkg")
     {
-        result = system(("pkg install " pkgList).c_str());
+        result = system(("pkg install " + pkgList).c_str());
     }
 
     return result == 0;
@@ -161,7 +161,7 @@ bool installPkg(const std::string& manager, const std::string& pkgList)
 // ===== REMOVE =====
 void removePkg(const std::string& manager, const std::string& pkgList)
 {
-    std::cout << "  🗑️  Removendo pacote(s)...” << std::endl;
+    std::cout << "  🗑️  Removendo pacote(s)..." << std::endl;
     if (manager == "apt")
     {
         system(("sudo apt remove -y " + pkgList).c_str());
@@ -192,11 +192,11 @@ void removePkg(const std::string& manager, const std::string& pkgList)
     }
     else if (manager == "paru")
     {
-        system(("paru -R " +pkgList).c_str());
+        system(("paru -R " + pkgList).c_str());
     }
     else if (manager == "pkg")
     {
-        system(("pkg uninstall " +pkgList).c_str());
+        system(("pkg uninstall " + pkgList).c_str());
     }
         
 }
