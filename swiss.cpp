@@ -298,7 +298,7 @@ int main(int argc, char* argv[])
 
         std::vector<std::string> priority =
         {
-            "xbps", "apt","pkg", "pacman", "dnf", "paru", "yay", "flatpak", "snap"
+            "xbps", "pkg","apt", "pacman", "dnf", "paru", "yay", "flatpak", "snap"
         };
 
         std::vector<std::string> available;
