@@ -4,7 +4,7 @@
 #include <array>
 #include <cstdio>
 // ===== EXEC =====
-#define VERSION "0.1.4"
+#define VERSION "0.1.5"
 std::string exec(const std::string& cmd)
 {
     std::array<char, 256> buffer;
@@ -331,6 +331,11 @@ void updateSystem(const std::vector<std::string>& managers)
         }
     }
 }
+// SELF UPDATE
+if (cmd == "self-update" || cmd == "update-swiss" || cmd == "upgrade-swiss")
+{
+    return "self-update";
+}
 // ===== MAIN =====
 int main(int argc, char* argv[])
 {
@@ -361,7 +366,15 @@ int main(int argc, char* argv[])
     {
         command = "install";
     }
+// ===== SELF UPDATE =====
+if (command == "self-update")
+{
+    std::cout << "Atualizando Swiss...\n";
 
+    system("curl -sL https://raw.githubusercontent.com/feroshina/Swiss-Package-Utensil/main/install.sh | bash");
+
+    return 0;
+}
 // ===== UPDATE =====
 if (command == "update")
 {
