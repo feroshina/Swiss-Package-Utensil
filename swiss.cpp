@@ -48,7 +48,7 @@ std::string resolveCommand(const std::string& cmd)
     }
 
     // SEARCH
-    if (cmd == "search" || cmd == "s" || cmd == "find" || cmd == "-Ss")
+    if (cmd == "search" || cmd == "s" || cmd == "find" || cmd == "-Ss" || cmd == "look")
     {
         return "search";
     }
@@ -72,7 +72,7 @@ std::string resolveCommand(const std::string& cmd)
 bool search(const std::string& manager, const std::string& pkg)
 {
     std::string result;
-
+    std::cout << "  🔎  Pesquisando pacote(s)..." <<std::endl;
     if (manager == "apt")
     {
         result = exec("apt search " + pkg);
@@ -101,6 +101,10 @@ bool search(const std::string& manager, const std::string& pkg)
     {
         result = exec("xbps-query " + pkg);
     }
+    else if (manager == "paru")
+    {
+        result = exec("paru -Ss " + pkg);
+    }
 
     return !result.empty();
 }
@@ -109,7 +113,7 @@ bool search(const std::string& manager, const std::string& pkg)
 bool installPkg(const std::string& manager, const std::string& pkgList)
 {
     int result = 1;
-
+    std::cout << "  📦  Instalando pacote(s)..." <<std::endl;
     if (manager == "apt")
     {
         result = system(("sudo apt install -y " + pkgList).c_str());
@@ -138,6 +142,10 @@ bool installPkg(const std::string& manager, const std::string& pkgList)
     {
         result = system(("xbps-install -S " + pkgList).c_str());
     }
+    else if (manager == "paru")
+    {
+        result = system(("paru -S " pkgList).c_str());
+    }
 
     return result == 0;
 }
@@ -145,6 +153,7 @@ bool installPkg(const std::string& manager, const std::string& pkgList)
 // ===== REMOVE =====
 void removePkg(const std::string& manager, const std::string& pkgList)
 {
+    std::cout << "  🗑️  Removendo pacote(s)...” << std::endl;
     if (manager == "apt")
     {
         system(("sudo apt remove -y " + pkgList).c_str());
@@ -173,15 +182,20 @@ void removePkg(const std::string& manager, const std::string& pkgList)
     {
         system(("xbps-remove " + pkgList).c_str());
     }
+    else if (manager == "paru")
+    {
+        system(("paru -R " +pkgList.c_str());
+    }
         
 }
 
 // ===== HELP =====
 void showHelp()
 {
+    std::cout << "============== Swiss, sua ferramenta Linux ==============" << "\n\n";
     std::cout << "Swiss v" << VERSION << "\n\n";
 
-    std::cout << "Uso:\n";
+    std::cout << "Instalação 📦 \n\n";
     std::cout << "  swiss <pacote>                (instala automaticamente)\n";
     std::cout << "  swiss install <pacote>\n";
     std::cout << "  swiss add <pacote>\n";
@@ -190,9 +204,14 @@ void showHelp()
     std::cout << "  swiss get <pacote>\n";
     std::cout << "  swiss -S <pacote>\n\n";
 
+    std::cout << "Pesquisa 🔍 \n\n";
     std::cout << "  swiss search <pacote>\n";
+    std::cout << "  swiss -Ss <pacote>\n";
+    std::cout << "  swiss find <pacote>\n";
+    std::cout << "  swiss look <pacote>\n";
     std::cout << "  swiss s <pacote>\n\n";
 
+    std::cout << "Remoção 🗑️ \n\n";
     std::cout << "  swiss delete <manager> <pacote>\n";
     std::cout << "  swiss remove <manager> <pacote>\n";
     std::cout << "  swiss rm <manager> <pacote>\n\n";
@@ -237,7 +256,7 @@ int main(int argc, char* argv[])
     // ===== UPDATE =====
     if (command == "update")
     {
-        system("curl -sL https://raw.githubusercontent.com/SEU_USUARIO/swiss/main/install.sh | bash");
+        system("curl -sL https://raw.githubusercontent.com/feroshina/swiss/main/install.sh | bash");
         return 0;
     }
 
@@ -267,7 +286,7 @@ int main(int argc, char* argv[])
 
         std::vector<std::string> priority =
         {
-            "xbps", "apt", "pacman", "dnf", "yay", "flatpak", "snap"
+            "xbps", "apt", "pacman", "dnf", "paru", "yay", "flatpak", "snap"
         };
 
         std::vector<std::string> available;
@@ -293,7 +312,7 @@ int main(int argc, char* argv[])
             std::cout << i + 1 << ") " << available[i] << "\n";
         }
 
-        std::cout << "\nInstalar automaticamente? (s, y/n): ";
+        std::cout << "\n  📥  Instalar do repositório recomendado? (s, y/n): ";
         char choice;
         std::cin >> choice;
 
@@ -336,6 +355,7 @@ int main(int argc, char* argv[])
         if (has("snap")) std::cout << exec("snap find " + pkg);
         if (has("yay")) std::cout << exec("yay -Ss " + pkg);
         if (has("xbps")) std::cout << exec("xbps-query " + pkg);
+        if (has("paru")) std::cout << exec("paru -Ss " + pkg);
     }
     // ===== REMOVE =====
     else if (command == "remove")
