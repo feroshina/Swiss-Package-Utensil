@@ -8,8 +8,10 @@
 #include <map>
 #include <algorithm>
 #include <cctype>
+#include <thread>
+#include <chrono>
 
-#define VERSION "0.9.0"
+#define VERSION "1.0.0"
 
 // ===== EXEC =====
 std::string exec(const std::string& cmd)
@@ -46,10 +48,8 @@ std::string trim(const std::string& s)
 
 std::string toLower(std::string s)
 {
-    for (char& c : s)
-    {
-        c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
-    }
+    std::transform(s.begin(), s.end(), s.begin(),
+                   [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
     return s;
 }
 
@@ -65,6 +65,25 @@ std::vector<std::string> splitWords(const std::string& s)
     }
 
     return out;
+}
+
+// ===== VISUAL =====
+void status(const std::string& text)
+{
+    std::cout << "📦 " << text << "...\n";
+}
+
+void progress(const std::string& text)
+{
+    std::vector<std::string> frames = {"📦", "📦✂️", "📦✂️📃", "📦✂️📃📃", "📦✂️📃📃📃"};
+
+    for (const auto& frame : frames)
+    {
+        std::cout << "\r" << text << " " << frame << std::flush;
+        std::this_thread::sleep_for(std::chrono::milliseconds(120));
+    }
+
+    std::cout << "\n";
 }
 
 // ===== CHECK COMMAND =====
@@ -91,7 +110,7 @@ std::string getOsReleaseValue(const std::string& key)
             std::string value = line.substr(key.size() + 1);
             value = trim(value);
 
-            if (!value.empty() && value.front() == '"' && value.back() == '"' && value.size() >= 2)
+            if (value.size() >= 2 && value.front() == '"' && value.back() == '"')
             {
                 value = value.substr(1, value.size() - 2);
             }
@@ -112,11 +131,11 @@ bool osReleaseHasToken(const std::string& key, const std::string& token)
     }
 
     value = toLower(value);
-    token = toLower(token);
+    std::string tokenLower = toLower(token);
 
     for (const auto& word : splitWords(value))
     {
-        if (word == token)
+        if (word == tokenLower)
         {
             return true;
         }
@@ -129,7 +148,6 @@ bool osReleaseHasToken(const std::string& key, const std::string& token)
 std::string getDistroID()
 {
     std::string id = toLower(getOsReleaseValue("ID"));
-
     if (!id.empty())
     {
         return id;
@@ -209,17 +227,17 @@ struct Manager
 // ===== MANAGERS =====
 std::vector<Manager> managers =
 {
-    {"apt",     "sudo apt install -y ",            "sudo apt remove -y ",          "sudo apt install --only-upgrade -y ", "sudo apt update && sudo apt upgrade -y", "apt search "},
-    {"pacman",  "sudo pacman -S ",                 "sudo pacman -R ",              "sudo pacman -S ",                     "sudo pacman -Syu",                      "pacman -Ss "},
-    {"dnf",     "sudo dnf install -y ",            "sudo dnf remove -y ",          "sudo dnf upgrade -y ",                "sudo dnf upgrade -y",                   "dnf search "},
-    {"emerge",  "sudo emerge ",                    "sudo emerge --unmerge ",       "sudo emerge --update ",               "sudo emerge --update @world",           "emerge --search "},
-    {"xbps",    "sudo xbps-install -S ",           "sudo xbps-remove ",            "sudo xbps-install -Su ",              "sudo xbps-install -Su",                 "xbps-query -Rs "},
-    {"nix-env", "nix-env -iA nixpkgs.",             "nix-env -e ",                  "nix-env -u ",                         "nix-env -u",                            "nix-env -qaP "},
-    {"yay",     "yay -S ",                         "yay -R ",                      "yay -S ",                              "yay -Syu",                              "yay -Ss "},
-    {"paru",    "paru -S ",                        "paru -R ",                     "paru -S ",                             "paru -Syu",                             "paru -Ss "},
-    {"pkg",     "pkg install ",                   "pkg uninstall ",               "pkg upgrade ",                        "pkg upgrade -y",                        "pkg search "},
-    {"flatpak", "flatpak install -y flathub ",     "flatpak uninstall -y ",        "flatpak update -y ",                  "flatpak update -y",                     "flatpak search "},
-    {"snap",    "sudo snap install ",              "sudo snap remove ",             "sudo snap refresh ",                  "sudo snap refresh",                     "snap find "}
+    {"apt",     "sudo apt install -y ",              "sudo apt remove -y ",            "sudo apt install --only-upgrade -y ", "sudo apt update && sudo apt upgrade -y", "apt search "},
+    {"pacman",  "sudo pacman -S ",                   "sudo pacman -R ",                 "sudo pacman -S ",                     "sudo pacman -Syu",                      "pacman -Ss "},
+    {"dnf",     "sudo dnf install -y ",              "sudo dnf remove -y ",             "sudo dnf upgrade -y ",                "sudo dnf upgrade -y",                   "dnf search "},
+    {"emerge",  "sudo emerge ",                      "sudo emerge --unmerge ",          "sudo emerge --update ",               "sudo emerge --update @world",           "emerge --search "},
+    {"xbps",    "sudo xbps-install -S ",             "sudo xbps-remove ",               "sudo xbps-install -Su ",              "sudo xbps-install -Su",                 "xbps-query -Rs "},
+    {"nix-env", "nix-env -iA nixpkgs.",              "nix-env -e ",                     "nix-env -u ",                         "nix-env -u",                            "nix-env -qaP "},
+    {"yay",     "yay -S ",                           "yay -R ",                         "yay -S ",                              "yay -Syu",                              "yay -Ss "},
+    {"paru",    "paru -S ",                          "paru -R ",                        "paru -S ",                             "paru -Syu",                             "paru -Ss "},
+    {"pkg",     "pkg install ",                      "pkg uninstall ",                  "pkg upgrade ",                        "pkg upgrade -y",                        "pkg search "},
+    {"flatpak", "flatpak install -y flathub ",       "flatpak uninstall -y ",           "flatpak update -y ",                  "flatpak update -y",                     "flatpak search "},
+    {"snap",    "sudo snap install ",                "sudo snap remove ",                "sudo snap refresh ",                  "sudo snap refresh",                     "snap find "}
 };
 
 // ===== PACKAGE MAP =====
@@ -316,7 +334,6 @@ std::vector<std::string> getPriority()
     return {"apt", "pacman", "dnf", "flatpak", "snap"};
 }
 
-// ===== AVAILABLE =====
 std::vector<std::string> getAvailable()
 {
     std::vector<std::string> available;
@@ -349,6 +366,11 @@ std::string resolvePackageName(const std::string& pkg, const std::string& manage
 
     if (manager == "nix-env")
     {
+        if (pkg.rfind("nixpkgs.", 0) == 0)
+        {
+            return pkg;
+        }
+
         return "nixpkgs." + pkg;
     }
 
@@ -401,7 +423,7 @@ void showHelp()
     std::cout << "  swiss --help\n\n";
 }
 
-// ===== PACKAGE LIST =====
+// ===== BUILD PACKAGE LIST =====
 std::string buildPackageList(const std::vector<std::string>& packages, const std::string& manager)
 {
     std::string list;
@@ -512,7 +534,7 @@ int installPackages(const std::vector<std::string>& args)
         }
 
         std::string list = buildPackageList(packages, managerName);
-        std::cout << "-> tentando " << managerName << "\n";
+        progress("📦 Instalando via " + managerName);
 
         return system((m->install + list).c_str()) == 0;
     };
@@ -607,7 +629,7 @@ int updatePackage(const std::string& managerName, const std::string& pkg)
         translated = autoFlatpakPackage(pkg);
     }
 
-    std::cout << "Atualizando pacote via " << managerName << "...\n";
+    progress("🔄 Atualizando pacote via " + managerName);
     return system((m->update + translated).c_str());
 }
 
@@ -621,7 +643,7 @@ int updateAllOfManager(const std::string& managerName)
         return 1;
     }
 
-    std::cout << "Atualizando via " << managerName << "...\n";
+    progress("🔄 Atualizando via " + managerName);
     return system(m->update_all.c_str());
 }
 
@@ -648,7 +670,6 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    // fallback: swiss firefox
     if (command == argv[1] && !isKnownManager(argv[1]))
     {
         command = "install";
@@ -656,7 +677,7 @@ int main(int argc, char* argv[])
 
     if (command == "self-update")
     {
-        std::cout << "Atualizando Swiss...\n";
+        progress("🔄 Atualizando Swiss");
         system("curl -sL https://raw.githubusercontent.com/feroshina/Swiss-Package-Utensil/main/install.sh | bash");
         return 0;
     }
@@ -678,8 +699,9 @@ int main(int argc, char* argv[])
     {
         if (argc == 2)
         {
-            std::vector<std::string> available = getAvailable();
+            status("Atualizando sistema");
 
+            std::vector<std::string> available = getAvailable();
             for (const auto& managerName : available)
             {
                 updateAllOfManager(managerName);
@@ -698,7 +720,6 @@ int main(int argc, char* argv[])
             }
 
             std::vector<std::string> available = getAvailable();
-
             for (const auto& managerName : available)
             {
                 if (updatePackage(managerName, target) == 0)
@@ -740,14 +761,13 @@ int main(int argc, char* argv[])
         std::string pkg = argv[3];
 
         Manager* m = getManager(managerName);
-
         if (!m)
         {
             std::cout << "Gerenciador invalido.\n";
             return 1;
         }
 
-        std::cout << "Removendo pacote...\n";
+        progress("🗑️ Removendo pacote");
         return system((m->remove + pkg).c_str());
     }
 
