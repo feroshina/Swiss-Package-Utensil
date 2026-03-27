@@ -232,13 +232,13 @@ int main(int argc, char* argv[])
             std::cout << i + 1 << ") " << available[i] << "\n";
         }
 
-        std::cout << "\nInstalar automaticamente? (y/n): ";
+        std::cout << "\nInstalar automaticamente? (s-y/n): ";
         char c;
         std::cin >> c;
 
         std::string chosen;
 
-        if (c == 'y' || c == 'Y')
+        if (c == 'y' || c == 'Y' || c == 's' || c == 'S')
         {
             chosen = available[0];
         }
