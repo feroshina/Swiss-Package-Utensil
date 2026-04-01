@@ -3,7 +3,7 @@
 set -e
 
 NAME="swiss"
-SRC="swiss.cpp"
+SRC="Swiss02.cpp"
 REPO="https://raw.githubusercontent.com/feroshina/Swiss-Package-Utensil/main"
 
 is_termux() {
